@@ -15,4 +15,6 @@ This paper aims at achieving fine-grained building attribute segmentation in a c
 
 # Data preparation
 
+The OmniCity dataset can be downloaded from [https://opendatalab.com/OmniCity](https://opendatalab.com/OmniCity).
+
 The Brooklyn dataset can be downloaded from "https://opendatalab.com/CVeRS/Cross-view"
