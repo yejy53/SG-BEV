@@ -18,3 +18,14 @@ This paper aims at achieving fine-grained building attribute segmentation in a c
 The OmniCity dataset can be downloaded from [https://opendatalab.com/OmniCity](https://opendatalab.com/OmniCity).
 
 The Brooklyn dataset can be downloaded from "https://opendatalab.com/CVeRS/Cross-view"
+
+## Citations
+```shell
+@inproceedings{ye2024sg,
+  title={SG-BEV: satellite-guided bev fusion for cross-view semantic segmentation},
+  author={Ye, Junyan and Luo, Qiyan and Yu, Jinhua and Zhong, Huaping and Zheng, Zhimeng and He, Conghui and Li, Weijia},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={27748--27757},
+  year={2024}
+}
+```
