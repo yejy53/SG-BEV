@@ -117,7 +117,7 @@ def train(rank, world_size, cfg):
     model = model.to(device)
 
     if device.type == 'cuda':
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[rank], find_unused_parameters=True)
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[rank], find_unused_parameters=False)
 
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
@@ -235,10 +235,7 @@ def train(rank, world_size, cfg):
                 obj_pred = masked_semmap_pred.data.max(-1)[1].detach()
                 obj_running_metrics.add(obj_pred, obj_gt)
 
-                # 分别记录五个梯度 L2 范数
-                if rank == 0:
                     
-
             time_meter.update(time.time() - start_ts)
 
             if (iter % cfg["training_setting"]["print_interval"] == 0):
@@ -247,9 +244,6 @@ def train(rank, world_size, cfg):
                 conf_metric = conf_metric.to(device)
                 distrib.all_reduce(conf_metric)
                 distrib.all_reduce(loss)
-                distrib.all_reduce(loss_svi)
-                distrib.all_reduce(loss_sate)
-                distrib.all_reduce(loss_fusion)
 
                 loss /= world_size
 
@@ -389,8 +383,11 @@ if __name__ == "__main__":
     nowTime = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M')
     run_id = nowTime
 
-    logdir = os.path.join("/data2/Pavement/WandB/TGRS/runs", name_expe, str(run_id))
-    chkptdir = os.path.join("/data2/Pavement/WandB/TGRS/checkpoints", name_expe, str(run_id))
+    log_cfg = cfg['log_dir']
+    checkpoint_cfg = cfg['checkpoint_dir']
+
+    logdir = os.path.join(log_cfg, name_expe, str(run_id))
+    chkptdir = os.path.join(checkpoint_cfg, name_expe, str(run_id))
 
 
     cfg['checkpoint_dir'] = chkptdir

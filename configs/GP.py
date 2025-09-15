@@ -3,12 +3,16 @@ name_experiment = "GP"
 
 model_type = "GP"
 
-module_name = "GP"
+model_name = "GP"
+
+checkpoint_dir = "checkpoints"
+
+log_dir = "runs"
 
 bev_size = 256
 
 model = dict(
-    n_obj_classes=2,
+    n_obj_classes=8,
     bev_size = bev_size,
     sate_size = 256,
     batch_size_every_processer = 1,
@@ -44,14 +48,14 @@ model = dict(
 )
 
 data = dict(
-    root = '/data2/Pavement/Seattle',
+    root = '/data/cross-view-datasets/segment/Newyork',
     train_split = 'train',
     val_split = 'val',
     test_split = 'val',
     # 文件夹名称，大部分时候不用改
     sate_folder = 'images/sate',
     svi_folder = 'images/svi',
-    gt_folder = 'gt'
+    gt_folder = 'gt_loveDA'
     )
 
 training_setting = dict(

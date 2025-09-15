@@ -8,13 +8,12 @@ from PIL import Image
 def sat2grd_uv(feature, rot, shift_u, shift_v, meter_per_pixel, grd_height, device):
 
     B,C,H,W = feature[1].size()
-    import pdb; pdb.set_trace()
     S = 32
     shift_u = shift_u * S / 4
     shift_v = shift_v * S / 4
 
     ii, jj = torch.meshgrid(torch.arange(0, S, dtype=torch.float32, device=device),
-                            torch.arange(0, S, dtype=torch.float32, device=device))
+                            torch.arange(0, S, dtype=torch.float32, device=device), indexing='ij')  
     ii = ii.unsqueeze(dim=0).repeat(B, 1, 1)  # [B, S, S] v dimension
     jj = jj.unsqueeze(dim=0).repeat(B, 1, 1)  # [B, S, S] u dimension
 

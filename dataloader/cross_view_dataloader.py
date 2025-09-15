@@ -52,6 +52,7 @@ class DatasetLoader(data.Dataset):
         # 读取图像数据
         img_sate = imread(os.path.join(self.root, self.sate_folder, file_sate))
         img_svi = imread(os.path.join(self.root, self.svi_folder, file_svi))
+        semmap_gt = imread(os.path.join(self.root, self.gt_folder, file_sate))
         # gt 应该为0 -- num_classes-1
         semmap_gt = semmap_gt.astype(np.int64)
         semmap_gt = imread(os.path.join(self.root, self.gt_folder, file_sate))

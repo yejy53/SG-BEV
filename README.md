@@ -7,10 +7,11 @@ This paper aims at achieving fine-grained building attribute segmentation in a c
 ### Installation
 ```bash
 #### To create conda env:
-    conda create -n SG-BEV python=3.8
-    conda activate SG-BEV
     cd /path/to/SG-BEV
-    pip install -r requirements.txt
+    conda env create -f environment.yml 
+    pip uninstall mmcv
+    pip install openmim
+    mim install mmcv==2.1.0
 ```
 
 # Data preparation

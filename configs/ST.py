@@ -3,12 +3,16 @@ name_experiment = "ST"
 
 model_type = "ST"
 
-module_name = "ST"
+model_name = "ST"
+
+checkpoint_dir = "checkpoints"
+
+log_dir = "runs"
 
 bev_size = 256
 
 model = dict(
-    n_obj_classes=2,
+    n_obj_classes=7,
     bev_size = bev_size,
     sate_size = 256,
     batch_size_every_processer = 1,
@@ -48,7 +52,7 @@ model = dict(
 
 data = dict(
     # 对应城市的路径
-    root = '/data2/Pavement/Seattle',
+    root = '/data/cross-view-datasets/segment/Newyork',
     train_split = 'train',
     val_split = 'val',
     test_split = 'val',
