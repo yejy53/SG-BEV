@@ -19,3 +19,32 @@ This paper aims at achieving fine-grained building attribute segmentation in a c
 The OmniCity dataset can be downloaded from [https://opendatalab.com/OmniCity](https://opendatalab.com/OmniCity).
 
 The Brooklyn dataset can be downloaded from "https://opendatalab.com/CVeRS/Cross-view"
+
+数据集组织格式应如下所示：
+
+```text
+Dataset_root/
+│
+├── train/         
+│   ├── gt/
+│   └── images/
+│       ├── sate
+│       └── svi
+│
+└── val/           
+    ├── gt/
+    └── images/
+        ├── sate
+        └── svi
+```
+
+
+
+
+# Model Training
+
+This project provides a training script **`train.sh`** with support for **multi-GPU distributed training**.
+
+```bash
+bash scripts/train.sh  # Specify the desired configuration file inside train.sh
+```

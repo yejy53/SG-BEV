@@ -59,9 +59,8 @@ data = dict(
     )
 
 training_setting = dict(
-    # 训练的epoch
     epochs = 40,
-    # 训练的batchsize
+    # batchsize = word_szie * batch_size_every_processer
     batch_size_every_processer = 1,
     batch_size = 1,
     world_size = 1,
