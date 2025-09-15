@@ -64,9 +64,12 @@ data = dict(
 
 training_setting = dict(
     epochs = 40,
+    # Please also modify batch_size_every_processer 
+    # in the model model config dict.
+    batch_size_every_processer = 5,
     # batchsize = word_szie * batch_size_every_processer
-    batch_size_every_processer = 1,
-    batch_size = 1,
+    batch_size = 20,
+    world_size = 4,
     n_workers = 28,
     print_interval = 10,
     val_interval = 1,

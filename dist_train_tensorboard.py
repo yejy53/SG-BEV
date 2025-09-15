@@ -227,7 +227,6 @@ def train(rank, world_size, cfg):
                 optimizer.step()
 
                 semmap_pred = semmap_pred.permute(0, 2, 3, 1)
-
                 masked_semmap_gt = semmap_gt[observed_masks]
                 masked_semmap_pred = semmap_pred[observed_masks]
                 

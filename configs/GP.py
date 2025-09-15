@@ -15,7 +15,7 @@ model = dict(
     n_obj_classes=8,
     bev_size = bev_size,
     sate_size = 256,
-    batch_size_every_processer = 1,
+    batch_size_every_processer = 5,
     mem_feature_dim = 128,
     neck_output_dim = 256,
     branch_output_dim = 128,
@@ -60,10 +60,12 @@ data = dict(
 
 training_setting = dict(
     epochs = 40,
+    # Please also modify batch_size_every_processer 
+    # in the model model config dict.
+    batch_size_every_processer = 5,
     # batchsize = word_szie * batch_size_every_processer
-    batch_size_every_processer = 1,
-    batch_size = 1,
-    world_size = 1,
+    batch_size = 20,
+    world_size = 4,
     n_workers = 28,
     print_interval = 10,
     val_interval = 1,
