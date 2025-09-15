@@ -26,4 +26,4 @@ dependencies:
   - zlib=1.2.13=h5eee18b_1
   - pip
   - pip:
-    - -r file:requirements.txt
+    - -r requirements.txt
