@@ -20,7 +20,7 @@ The OmniCity dataset can be downloaded from [https://opendatalab.com/OmniCity](h
 
 The Brooklyn dataset can be downloaded from "https://opendatalab.com/CVeRS/Cross-view"
 
-数据集组织格式应如下所示：
+The dataset should be organized as follows:
 
 ```text
 Dataset_root/
