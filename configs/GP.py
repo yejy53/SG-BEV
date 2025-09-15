@@ -59,7 +59,7 @@ data = dict(
     )
 
 training_setting = dict(
-    epochs = 40,
+    epochs = 50,
     # Please also modify batch_size_every_processer 
     # in the model model config dict.
     batch_size_every_processer = 5,
@@ -72,7 +72,7 @@ training_setting = dict(
     resume = None,
     load_model = None,
     optimizer = dict(
-                    lr = 0.00005,
+                    lr = 0.00006,
                     betas = (0.9, 0.999),
                     weight_decay = 0.01
     ),
