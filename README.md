@@ -4,17 +4,21 @@ This paper aims at achieving fine-grained building attribute segmentation in a c
 <img src="SG-BEV.png" alt="method" width="700"/>
 
 
-### Installation
+## Installation
+
+This project was developed and tested in CUDA 12.1
+
 ```bash
 #### To create conda env:
-    cd /path/to/SG-BEV
-    conda env create -f environment.yml 
-    pip uninstall mmcv
-    pip install openmim
-    mim install mmcv==2.1.0
+cd /path/to/SG_BEV
+conda env create -f environment.yml 
+conda activate SG_BEV
+pip uninstall mmcv
+pip install openmim
+mim install mmcv==2.1.0
 ```
 
-# Data preparation
+## Data preparation
 
 The OmniCity dataset can be downloaded from [https://opendatalab.com/OmniCity](https://opendatalab.com/OmniCity).
 
@@ -41,7 +45,11 @@ Dataset_root/
 
 
 
-# Model Training
+## Model Training
+
+This project adopts [SegNeXt](https://github.com/Visual-Attention-Network/SegNeXt) with the MSCAN-B2 variant as the feature extractor for both street-view and satellite imagery, using non-shared weights pre-trained on the Cityscapes dataset. Pretrained weights can be downloaded from [TsingHua Cloud](https://cloud.tsinghua.edu.cn/f/adb49029f66f426bb046/?dl=1).
+
+Pre-trained weights should be placed in `/SG_BEV/checkpoints`
 
 This project provides a training script **`train.sh`** with support for **multi-GPU distributed training**.
 
