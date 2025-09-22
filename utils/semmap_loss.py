@@ -1,0 +1,250 @@
+import torch
+from torch import nn
+import torch.nn.functional as F
+
+
+class SemmapLoss(nn.Module):
+    def __init__(self):
+        super(SemmapLoss, self).__init__()
+        self.loss = nn.CrossEntropyLoss(reduction='none')
+
+    def forward(self, obj_gt, obj_pred, mask):
+        mask = mask.float()
+    
+        # 检查 obj_gt 和 obj_pred 的形状、设备、数据类型
+        # print("obj_gt.shape = ", obj_gt.shape)
+        # print("obj_pred.shape = ", obj_pred.shape)
+        # print("obj_gt.device = ", obj_gt.device)
+        # print("obj_pred.device = ", obj_pred.device)
+        # print("obj_gt.dtype = ", obj_gt.dtype)
+        # print("obj_pred.dtype = ", obj_pred.dtype)
+        
+        # 打印 obj_gt 和 obj_pred 的值域范围
+        # print("obj_gt min = ", obj_gt.min())
+        # print("obj_gt max = ", obj_gt.max())
+        # print("obj_pred min = ", obj_pred.min())
+        # print("obj_pred max = ", obj_pred.max())
+
+        loss = self.loss(obj_pred, obj_gt)
+        # print("loss = ",loss)
+        loss = torch.mul(loss, mask)
+        # -- mask is assumed to have a least one value
+        
+        # print("LOSS_sum = ",loss.sum())
+        # print("mask_sum = ",mask.sum())
+        loss = loss.sum()/mask.sum()
+
+        return loss
+
+# class SemmapLoss(nn.Module):
+#     def __init__(self, model, lambda_reg=0.01):
+#         super(SemmapLoss, self).__init__()
+#         self.loss = nn.CrossEntropyLoss(reduction='none')
+#         self.model = model
+#         self.lambda_reg = lambda_reg
+
+#     def forward(self, obj_gt, obj_pred, mask):
+#         mask = mask.float()
+#         loss = self.loss(obj_pred, obj_gt)
+#         loss = torch.mul(loss, mask)
+
+#         # L2 regularization
+#         l2_reg = 0.0
+#         for param in self.model.parameters():
+#             l2_reg += torch.norm(param, 2)
+        
+#         total_loss = loss.sum()/mask.sum() + self.lambda_reg * l2_reg
+
+#         return total_loss
+
+
+class hcl_loss_masked(nn.Module):
+    def __init__(self):
+        super(hcl_loss_masked, self).__init__()
+
+    def forward(self, fstudent, fteacher):
+        loss_all = 0.0
+        for fs, ft in zip(fstudent, fteacher):
+            n,c,h,w = fs.shape
+
+            fs_masked = fs[:, :, round(0.4*h):round(0.6*h), :] 
+            ft_masked = ft[:, :, round(0.4*h):round(0.6*h), :] 
+
+            loss = F.mse_loss(fs_masked, ft_masked, reduction='mean')
+            ##################################################################################################################################
+            # mask = torch.zeros(( h, w), device=loss.device)
+            # mask[round(0.3*h): round(0.7*h), :] = 1
+            # loss = torch.mul(loss, mask)
+            # # -- mask is assumed to have a least one value
+            # loss = loss.sum()/mask.sum()/c
+            
+            ##################################################################################################################################
+            
+            cnt = 1.0
+            tot = 1.0
+            for l in [4,2,1]:
+                if l >=h:
+                    continue
+                tmpfs = F.adaptive_avg_pool2d(fs_masked, (l,l))
+                tmpft = F.adaptive_avg_pool2d(ft_masked, (l,l))
+                cnt /= 2.0
+                loss += F.mse_loss(tmpfs, tmpft, reduction='mean') * cnt
+                tot += cnt
+            loss = loss / tot
+            loss_all = loss_all + loss
+        return loss_all
+    ###############################################################################################################################################
+class hcl_loss(nn.Module):
+    def __init__(self):
+        super(hcl_loss, self).__init__()
+
+    def forward(self, fstudent, fteacher):
+        loss_all = 0.0
+        if isinstance(fstudent, list) == True:
+
+            for fs, ft in zip(fstudent, fteacher):
+                n,c,h,w = fs.shape
+                loss = F.mse_loss(fs, ft, reduction='mean')
+
+                cnt = 1.0
+                tot = 1.0
+                for l in [4,2,1]:
+                    if l >=h:
+                        continue
+                    tmpfs = F.adaptive_avg_pool2d(fs, (l,l))
+                    tmpft = F.adaptive_avg_pool2d(ft, (l,l))
+                    cnt /= 2.0
+                    loss += F.mse_loss(tmpfs, tmpft, reduction='mean') * cnt
+                    tot += cnt
+                loss = loss / tot
+                loss_all = loss_all + loss
+        else:
+            fs, ft = fstudent, fteacher
+
+            n,c,h,w = fs.shape
+            loss = F.mse_loss(fs, ft, reduction='mean')
+            
+            cnt = 1.0
+            tot = 1.0
+            for l in [4,2,1]:
+                if l >=h:
+                    continue
+                tmpfs = F.adaptive_avg_pool2d(fs, (l,l))
+                tmpft = F.adaptive_avg_pool2d(ft, (l,l))
+                cnt /= 2.0
+                loss += F.mse_loss(tmpfs, tmpft, reduction='mean') * cnt
+                tot += cnt
+            loss = loss / tot
+            loss_all = loss_all + loss
+        return loss_all
+
+
+
+
+################################################################################################################################################
+################################################################################################################################################
+class KL_div_loss(nn.Module):
+    def __init__(self):
+        super(KL_div_loss, self).__init__()
+        # self.loss = F.kl_div(reduction="none")
+
+    def forward(self, fstudent, fteacher):
+        loss_all = 0.0
+
+        # mask = mask.float()
+        for fs, ft in zip(fstudent, fteacher):
+            n,c,h,w = fs.shape
+
+            loss = F.kl_div(fs.softmax(dim=-1).log(), ft.softmax(dim=-1), reduction="none")
+
+            mask = torch.zeros(( h, w), device=loss.device)
+            mask[round(0.3*h): round(0.7*h), :] = 1
+
+            loss = torch.mul(loss, mask)
+            # -- mask is assumed to have a least one value
+
+            loss = loss.sum()/mask.sum()
+            loss_all = loss_all + loss
+
+        return loss_all
+
+
+#############################################################################################################################################################
+
+class ChannelNorm(nn.Module):
+    def __init__(self):
+        super(ChannelNorm, self).__init__()
+    def forward(self,featmap):
+        n,c,h,w = featmap.shape
+        featmap = featmap.reshape((n,c,-1))
+        featmap = featmap.softmax(dim=-1)
+        return featmap
+
+
+
+class CriterionCWD(nn.Module):
+
+    def __init__(self,norm_type='channel',divergence='kl',temperature=1.0):
+    
+        super(CriterionCWD, self).__init__()
+       
+
+        # define normalize function
+        if norm_type == 'channel':
+            self.normalize = ChannelNorm()
+        elif norm_type =='spatial':
+            self.normalize = nn.Softmax(dim=1)
+        elif norm_type == 'channel_mean':
+            self.normalize = lambda x:x.view(x.size(0),x.size(1),-1).mean(-1)
+        else:
+            self.normalize = None
+        self.norm_type = norm_type
+
+        self.temperature = temperature
+
+        # define loss function
+        if divergence == 'mse':
+            self.criterion = nn.MSELoss(reduction='sum')
+        elif divergence == 'kl':
+            self.criterion = nn.KLDivLoss(reduction='sum')
+            self.temperature = temperature
+        self.divergence = divergence
+
+    def forward(self, fstudent, fteacher):
+
+        loss_all = 0.0
+        # for fs, ft in zip(fstudent, fteacher):
+        # fs = fstudent[3]
+        # ft = fteacher[3]
+        fs = fstudent
+        ft = fteacher
+
+
+        n,c,h,w = fs.shape
+
+        fs = fs[:, :, round(0.4*h):round(0.7*h), :] 
+        ft = ft[:, :, round(0.4*h):round(0.7*h), :] 
+
+        #import pdb;pdb.set_trace()
+        if self.normalize is not None:
+            norm_s = self.normalize(fs/self.temperature)
+            norm_t = self.normalize(ft.detach()/self.temperature)
+        else:
+            norm_s = fs[0]
+            norm_t = ft[0].detach()
+        
+        
+        if self.divergence == 'kl':
+            norm_s = norm_s.log()
+        loss = self.criterion(norm_s,norm_t)
+        
+        #item_loss = [round(self.criterion(norm_t[0][0].log(),norm_t[0][i]).item(),4) for i in range(c)]
+        #import pdb;pdb.set_trace()
+        if self.norm_type == 'channel' or self.norm_type == 'channel_mean':
+            loss /= n * c
+            # loss /= n * h * w
+        else:
+            loss /= n * h * w
+
+        loss_all = loss_all + loss
+        return loss_all * (self.temperature**2)

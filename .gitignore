@@ -1,3 +1,9 @@
+checkpoints/
+runs/
+# Python 缓存文件
+__pycache__/
+*.pyc
+*.pth
 ### AL ###
 #Template for AL projects for Dynamics 365 Business Central
 #launch.json folder
