@@ -55,6 +55,7 @@ data = dict(
     # 文件夹名称，大部分时候不用改
     sate_folder = 'images/sate',
     svi_folder = 'images/svi',
+    # gt 应该为0 -- num_classes-1
     gt_folder = 'gt_loveDA'
     )
 
